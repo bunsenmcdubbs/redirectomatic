@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"go.etcd.io/bbolt"
+	"log"
 )
 
 const bucket = "redirects"
@@ -68,4 +69,31 @@ func (s *Store) Delete(key string) {
 	_ = s.db.Update(func(tx *bbolt.Tx) error {
 		return tx.Bucket([]byte(bucket)).Delete([]byte(key))
 	})
+}
+
+type Redirect struct {
+	Key string
+	RedirectDestination
+}
+
+func (s *Store) List(start string, limit int) (dests []Redirect, err error) {
+	err = s.db.View(func(tx *bbolt.Tx) error {
+		cur := tx.Bucket([]byte(bucket)).Cursor()
+		for key, dest := cur.Seek([]byte(start)); key != nil; key, dest = cur.Next() {
+			var parsed RedirectDestination
+			if err := json.Unmarshal(dest, &parsed); err != nil {
+				log.Println("unable to parse record for key", key)
+				continue
+			}
+			dests = append(dests, Redirect{
+				Key:                 string(key),
+				RedirectDestination: parsed,
+			})
+			if limit > 0 && len(dests) == limit {
+				break
+			}
+		}
+		return nil
+	})
+	return dests, err
 }

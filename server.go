@@ -82,10 +82,16 @@ func adminHandler(s *Store) http.Handler {
 	return mux
 }
 
-func listRedirectHandler(_ *Store) http.Handler {
-	// TODO implement list
+func listRedirectHandler(s *Store) http.Handler {
+	// TODO paginate
 	return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		http.Error(w, "list handler is not implemented", http.StatusNotFound)
+		redirects, err := s.List("", 0)
+		if err != nil {
+			log.Println("unable to list redirects", err)
+			http.Error(w, "unable to list redirects", http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, redirects)
 	})
 }
 
