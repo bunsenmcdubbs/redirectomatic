@@ -1,4 +1,4 @@
-module redirect
+module github.com/bunsenmcdubbs/redirectomatic
 
 go 1.20
 

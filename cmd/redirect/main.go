@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/bunsenmcdubbs/redirectomatic"
 	"log"
 	"net/http"
-	"redirect"
 	"time"
 )
 
