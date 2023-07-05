@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+    <title>URL Redirector Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+
+<h1>Redirect-o-matic</h1>
+
+<form method="post" class="row row-cols-lg-auto g-2 align-items-center">
+    <div class="col-4">
+        <!--  TODO configure this label to be configurable  -->
+        <label for="key" class="visually-hidden">Key</label>
+        <div class="input-group">
+            <div class="input-group-text">dsasf.org</div>
+            <input type="text" name="key" id="key" class="form-control" placeholder="short-url">
+        </div>
+    </div>
+    <div class="col-auto">
+        <label for="url" class="visually-hidden">Destination URL️</label>
+        <div class="input-group">
+            <div class="input-group-text">➡️</div>
+            <input type="text" name="url" id="url" class="form-control" placeholder="https://destination-website.com/">
+        </div>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>
+
+<div>
+    <h2>Active Redirects</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Updated At</th>
+            </tr>
+        </thead>
+        {{range .Redirects}}
+        <tr>
+            <th scope="row">/{{ .Key }}</th>
+            <td><a href="{{ .URL }}">{{ .URL }}</a></td>
+            <td>{{ .UpdatedAt }}</td>
+        </tr>
+        {{end}}
+    </table>
+</div>
+</div>
+</body>
+</html>

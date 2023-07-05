@@ -5,6 +5,7 @@ import (
 	"errors"
 	"go.etcd.io/bbolt"
 	"log"
+	"time"
 )
 
 const bucket = "redirects"
@@ -14,8 +15,9 @@ type Store struct {
 }
 
 type RedirectDestination struct {
-	URL     string           `json:"url"`
-	Options *RedirectOptions `json:"options"`
+	URL       string           `json:"url"`
+	Options   *RedirectOptions `json:"options"`
+	UpdatedAt time.Time        `json:"updated_at"`
 }
 
 type RedirectOptions struct {
@@ -40,6 +42,7 @@ func (s *Store) Close() error {
 }
 
 func (s *Store) Upsert(key string, dest RedirectDestination) error {
+	dest.UpdatedAt = time.Now()
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		destJSON, err := json.Marshal(dest)
 		if err != nil {
