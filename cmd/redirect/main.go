@@ -12,7 +12,7 @@ func main() {
 
 	s := &http.Server{
 		Addr:    ":8080",
-		Handler: logger(redirect.Handler(store)),
+		Handler: logger(redirect.Handler(redirect.Config{Domain: "dsasf.org"}, store)),
 	}
 	log.Fatal(s.ListenAndServe())
 }

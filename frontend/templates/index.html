@@ -10,10 +10,9 @@
 
 <form method="post" class="row row-cols-lg-auto g-2 align-items-center">
     <div class="col-4">
-        <!--  TODO configure this label to be configurable  -->
         <label for="key" class="visually-hidden">Key</label>
         <div class="input-group">
-            <div class="input-group-text">dsasf.org</div>
+            <div class="input-group-text">{{ .Cfg.Domain }}</div>
             <input type="text" name="key" id="key" class="form-control" placeholder="short-url">
         </div>
     </div>

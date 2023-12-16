@@ -14,10 +14,14 @@ import (
 	"time"
 )
 
-func Handler(s *Store) http.Handler {
+type Config struct {
+	Domain string
+}
+
+func Handler(cfg Config, s *Store) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.Handle("/admin/", adminHandler(s))
+	mux.Handle("/admin/", adminHandler(cfg, s))
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		dest, err := s.Get(strings.TrimPrefix(r.URL.Path, "/"))
 		if errors.Is(err, ErrNotFound) {
@@ -37,11 +41,11 @@ func Handler(s *Store) http.Handler {
 //go:embed frontend
 var embeddedFS embed.FS
 
-func adminHandler(s *Store) http.Handler {
+func adminHandler(cfg Config, s *Store) http.Handler {
 	// TODO implement authentication
 	mux := http.NewServeMux()
 
-	mux.Handle("/admin/", http.StripPrefix("/admin", uiHandler(s)))
+	mux.Handle("/admin/", http.StripPrefix("/admin", uiHandler(cfg, s)))
 
 	staticFS, _ := fs.Sub(embeddedFS, "frontend/static")
 	mux.Handle("/admin/static/", http.StripPrefix("/admin/static/", http.FileServer(http.FS(staticFS))))
@@ -51,7 +55,7 @@ func adminHandler(s *Store) http.Handler {
 	return mux
 }
 
-func uiHandler(s *Store) http.Handler {
+func uiHandler(cfg Config, s *Store) http.Handler {
 	mux := http.NewServeMux()
 
 	t := template.Must(template.ParseFS(embeddedFS, "frontend/templates/index.html"))
@@ -92,8 +96,9 @@ func uiHandler(s *Store) http.Handler {
 
 		redirects, _ := s.List("", 0)
 		_ = t.Execute(w, struct {
+			Cfg       Config
 			Redirects []Redirect
-		}{Redirects: redirects})
+		}{Cfg: cfg, Redirects: redirects})
 	})
 
 	return mux
